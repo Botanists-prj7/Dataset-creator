@@ -1,72 +1,86 @@
-from logging import error
-from os import sep
 import geopandas as gpd
+from geopandas import geodataframe
 from matplotlib import pyplot as plt
-from pandas.io import pytables
 import shapely
+from progress.bar import Bar
+import os
+from pathlib import Path
 import numpy as np
-import pandas as pd
-import codecs
 
+#functions:
+def save_gdf_to_csv_in_folder(foldername,filename,gdf):
+    Path(foldername).mkdir(parents=True, exist_ok=True)
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(file_dir, foldername, filename)
+    gdf.to_csv(file_path)
 
 def calculateCenter(xmin,xmax,ymin,ymax):
     xmean = (xmin+xmax)/2
     ymean = (ymin+ymax)/2
     return shapely.geomety.Point(xmean,ymean)
 
+def convert_gdf_to_gdfgrid(gdf,distance_pr_cell_in_m):
+    xmin, ymin, xmax, ymax = gdf.total_bounds
+    grid_cells = []
+    x = xmin
+    while x < xmax:
+        y = ymin
+        while y < ymax:
+            grid_cells.append(shapely.geometry.box(x, y, x+distance_pr_cell_in_m, y+distance_pr_cell_in_m))
+            y += distance_pr_cell_in_m
+        x += distance_pr_cell_in_m
+    return gpd.GeoDataFrame(grid_cells, columns=['geometry'], crs=crs)    
+
+def convert_shp_to_gdf_using_crs(shp,crs):
+    geodataframe = gpd.read_file(shp)
+    return geodataframe.to_crs(crs)
+
+def first_row_of_gdf_containing_point(gdf,point):
+    polygons_containing_point_list = gdf.contains(point)
+    polygon_containing_point = np.where(polygons_containing_point_list)[0]
+    if(polygon_containing_point):
+        return gdf.loc[polygon_containing_point[0]]
+    else:
+        return None
+
+def add_center_to_gdf(gdf):
+    gdf['center'] = gdf.centroid
+    return gdf
+
+#script:
 crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
-print('loading data...')
-dk_gdf = gpd.read_file('geopandas/jordart_200000.shp')
-dk_gdf = dk_gdf.to_crs(crs)
+
+gridsizes = [5000] #10km grid size
+
+for gridsize in gridsizes:
+
+    soiltypeColumnName = 'soiltype'
+    centerColumnName = 'center'
+
+    dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('jordart_200000.shp',crs)
+    dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize) 
+
+    #Adding relevant data to our geodataframe
+    dk_geodataframe_grid[soiltypeColumnName] = ''
+    dk_geodataframe_grid[centerColumnName] = dk_geodataframe_grid.centroid
+    
+    #Going through all grids an finding the needed soiltype
+    bar = Bar('Finding soiltype of all gridcells', max=len(dk_geodataframe_grid.index))
+    output_dk_grid = []
+    for index, grid in dk_geodataframe_grid.iterrows():    
+        row_containing_point = first_row_of_gdf_containing_point(dk_soiltype_geodataframe,grid[centerColumnName]) 
+        if not (row_containing_point is None):
+            foundSoilType = row_containing_point['TSYM']
+            output_dk_grid.append([grid['geometry'], foundSoilType])        
+        bar.next()
+    bar.finish()    
 
 
-
-#dk_gdf.to_file('C:\AAU\henning.shp')
-
-print(dk_gdf.head())
-xmin, ymin, xmax, ymax = dk_gdf.total_bounds
-
-#n_cells=200
-distance_pr_cell = 10000 #10km cell size
-#cell_size = (xmax-xmin)/n_cells
-
-gridCells2 = []
-x = xmin
-while x < xmax:
-    y = ymin
-    while y < ymax:
-        gridCells2.append(shapely.geometry.box(x, y, x+distance_pr_cell, y+distance_pr_cell))
-        y += distance_pr_cell
-    x += distance_pr_cell
-
-#Adding all cells to a GeoDataFrame
-cells = gpd.GeoDataFrame(gridCells2, columns=['geometry'], crs=crs)
-cells['soiltype'] = ''
-print(cells)
-#Gettting the centerpoints of all cells.
-centroids = cells.centroid
-
-#Going through all centerpoints
-counter = 0
-foundcentroids = []
-for centroid in centroids:
-    #Finding what polygon in dk_gdf matches the centerpoint
-    polygons_containing_centroid = dk_gdf.contains(centroid)
-    polygon_containing_centroid = [i for i, val in enumerate(polygons_containing_centroid) if val]
-    #If a match was found, we get the soiltype of that centerpoint
-    if(polygon_containing_centroid != []):
-        foundSoilType = dk_gdf.loc[polygon_containing_centroid[0],'TSYM']
-        cells.loc[counter,'soiltype'] = foundSoilType
-    #foundcentroids.append(res)
-    print(counter)
-    counter+=1
-
-
-#ax = dk_gdf.plot(column = 'TSYM')
-plt.autoscale(False)
-cells.plot(column = 'soiltype')
-#ax.axis("off")
-
-plt.show()
+    output_dk_gdf_grid = gpd.GeoDataFrame(output_dk_grid, columns=['geometry', soiltypeColumnName])
+    #output_dk_gdf_grid.plot(column = soiltypeColumnName)
+    save_gdf_to_csv_in_folder(f'csv_files',f'DK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
+    output_dk_gdf_grid.drop(soiltypeColumnName, inplace=True, axis=1)
+    save_gdf_to_csv_in_folder(f'csv_files',f'DK_Grid_{ gridsize}.csv',output_dk_gdf_grid)
+    plt.show()
