@@ -38,7 +38,7 @@ def convert_shp_to_gdf_using_crs(shp,crs):
 def first_row_of_gdf_containing_point(gdf,point):
     polygons_containing_point_list = gdf.contains(point)
     polygon_containing_point = np.where(polygons_containing_point_list)[0]
-    if(polygon_containing_point):
+    if(polygon_containing_point.size > 0):
         return gdf.loc[polygon_containing_point[0]]
     else:
         return None
@@ -52,14 +52,16 @@ crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
 
-gridsizes = [5000] #10km grid size
+gridsizes = [100000] #100km grid size
+update_csv_files = False #Set true if CSV files should be updated
+plot_grid = True
 
 for gridsize in gridsizes:
 
     soiltypeColumnName = 'soiltype'
     centerColumnName = 'center'
 
-    dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('jordart_200000.shp',crs)
+    dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('data\\Jordart_200000_Shape\\jordart_200000.shp',crs)
     dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize) 
 
     #Adding relevant data to our geodataframe
@@ -79,8 +81,12 @@ for gridsize in gridsizes:
 
 
     output_dk_gdf_grid = gpd.GeoDataFrame(output_dk_grid, columns=['geometry', soiltypeColumnName])
-    #output_dk_gdf_grid.plot(column = soiltypeColumnName)
-    save_gdf_to_csv_in_folder(f'csv_files',f'DK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
-    output_dk_gdf_grid.drop(soiltypeColumnName, inplace=True, axis=1)
-    save_gdf_to_csv_in_folder(f'csv_files',f'DK_Grid_{ gridsize}.csv',output_dk_gdf_grid)
-    plt.show()
+    if(plot_grid):
+        output_dk_gdf_grid.plot(column = soiltypeColumnName) 
+        plt.show()
+        
+    if(update_csv_files):
+        save_gdf_to_csv_in_folder('csv_files',f'DK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
+        output_dk_gdf_grid.drop(soiltypeColumnName, inplace=True, axis=1)
+        save_gdf_to_csv_in_folder('csv_files',f'DK_Grid_{gridsize}.csv',output_dk_gdf_grid)
+    
