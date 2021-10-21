@@ -12,7 +12,7 @@ def save_gdf_to_csv_in_folder(foldername,filename,gdf):
     Path(foldername).mkdir(parents=True, exist_ok=True)
     file_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(file_dir, foldername, filename)
-    gdf.to_csv(file_path)
+    gdf.to_csv(file_path,index=False)
 
 def calculateCenter(xmin,xmax,ymin,ymax):
     xmean = (xmin+xmax)/2
@@ -52,9 +52,9 @@ crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
 
-gridsizes = [100000] #100km grid size
-update_csv_files = False #Set true if CSV files should be updated
-plot_grid = True
+gridsizes = [5000] #5km grid size
+update_csv_files = True #Set true if CSV files should be updated
+plot_grid = False
 
 for gridsize in gridsizes:
 
@@ -89,4 +89,3 @@ for gridsize in gridsizes:
         save_gdf_to_csv_in_folder('csv_files',f'DK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
         output_dk_gdf_grid.drop(soiltypeColumnName, inplace=True, axis=1)
         save_gdf_to_csv_in_folder('csv_files',f'DK_Grid_{gridsize}.csv',output_dk_gdf_grid)
-    
