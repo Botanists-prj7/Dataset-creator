@@ -9,18 +9,22 @@ import pandas as pd
 import codecs
 
 
-plants = pd.read_csv('outfiles/floradanica.csv', error_bad_lines=False, sep='\t', engine='python')
+plants = pd.read_csv('/Users/kaspermadsen/Desktop/data/outfiles/floradanica.csv', error_bad_lines=False, sep='\t', engine='python')
+
+""" 
 for df in plants:
     print(df)
 newplants = plants[['decimalLongitude','decimalLatitude','species']]
 newplants.to_csv('outfiles/data_with_lat_long.csv')
+ """
+newplants = plants[['decimalLongitude','decimalLatitude','species']]
 
-newplants['POINT'] = newplants['decimalLatitude'].map(str) + ', ' + newplants['decimalLongitude'].map(str)
-newnewplants = newplants[['species','POINT']]
+newplants['geometry'] = "Point"+"(" + newplants['decimalLatitude'].map(str) + ', ' + newplants['decimalLongitude'].map(str) + ")"
+newnewplants = newplants[['species','geometry']]
 
 
-newnewplants.to_csv('outfiles/data_with_points_column.csv')
-
+newnewplants.to_csv('csv_files/plantsdata.csv')
+""" 
 plants = pd.read_csv('floradanicaupdate.csv')
 print(plants)
 list_of_plants = pd.DataFrame([])
@@ -32,3 +36,4 @@ print(list_of_plants.sort_values(by="kingdom", ascending=False).head(10))
 
 print("Total rows: " + str(sum(list_of_plants)))
 
+ """
