@@ -2,7 +2,7 @@ import geopandas as gpd
 from geopandas import geodataframe
 from matplotlib import pyplot as plt
 import shapely
-#from progress.bar import Bar
+from progress.bar import Bar
 import os
 from pathlib import Path
 import numpy as np
@@ -69,15 +69,15 @@ for gridsize in gridsizes:
     dk_geodataframe_grid[centerColumnName] = dk_geodataframe_grid.centroid
     
     #Going through all grids an finding the needed soiltype
-    #bar = Bar('Finding soiltype of all gridcells', max=len(dk_geodataframe_grid.index))
+    bar = Bar('Finding soiltype of all gridcells', max=len(dk_geodataframe_grid.index))
     output_dk_grid = []
     for index, grid in dk_geodataframe_grid.iterrows():    
         row_containing_point = first_row_of_gdf_containing_point(dk_soiltype_geodataframe,grid[centerColumnName]) 
         if not (row_containing_point is None):
             foundSoilType = row_containing_point['TSYM']
             output_dk_grid.append([grid['geometry'], foundSoilType])        
-        #bar.next()
-    #bar.finish()    
+        bar.next()
+    bar.finish()    
 
 
     output_dk_gdf_grid = gpd.GeoDataFrame(output_dk_grid, columns=['geometry', soiltypeColumnName])

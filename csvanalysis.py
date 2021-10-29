@@ -1,5 +1,6 @@
 from logging import error
 from os import sep
+from re import X
 import geopandas as gpd
 from geopandas.array import points_from_xy
 from matplotlib import pyplot as plt
@@ -12,24 +13,36 @@ from shapely import wkt
 from shapely import geometry
 from shapely.geometry.point import Point
 import rtree
+from tqdm import tqdm, tqdm_notebook
+import time
 
+
+tqdm.pandas()
+print('Reading Grid CSV')
 df = pd.read_csv('csv_files/DK_Grid_10000.csv')
-df['geometry'] = df['geometry'].apply(wkt.loads)
-soil = gpd.GeoDataFrame(df, crs='EPSG:3857')
-soil = soil.to_crs('EPSG:3857')
-print(df)
+print('Setting WKT...')
+df['geometry'] = df['geometry'].apply(wkt.loads).progress_apply(lambda x: x)
+print('Converting projection')
+soil = gpd.GeoDataFrame(df, crs='EPSG:3857').progress_apply(lambda x: x)
+print('Converting projection...')
+soil = soil.to_crs('EPSG:3857').progress_apply(lambda x: x)
+#print(df)
 
+
+print('Converting plants csv')
 df2 = pd.read_csv('data/data_with_lat_long.csv')
 newdf = df2
-gdf = gpd.GeoDataFrame(newdf, geometry=gpd.points_from_xy(df2['decimalLongitude'], df2['decimalLatitude']), crs='EPSG:4326')
-gdf = gdf.to_crs('EPSG:3857')
-gdf.set_geometry('geometry')
-print(gdf.head())
+print('Applying geometry conversion for plants')
+gdf = gpd.GeoDataFrame(newdf, geometry=gpd.points_from_xy(df2['decimalLongitude'], df2['decimalLatitude']), crs='EPSG:4326').progress_apply(lambda x: x)
+print('Converting plants data projection')
+gdf = gdf.to_crs('EPSG:3857').progress_apply(lambda x: x)
+print('Setting geometry for plants')
+gdf.set_geometry('geometry').progress_apply(lambda x: x)
+#print(gdf.head())
 
-
-points_within = gpd.sjoin(gdf, soil, op='within', how='inner')
-print(points_within)
-
+print('Finding intersecting points...')
+points_within = gpd.sjoin(gdf, soil, op='within', how='inner').progress_apply(lambda x: x)
+gpd.GeoDataFrame(points_within).to_csv('csv_files/plantsoilintersection.csv')
 
 
 """
