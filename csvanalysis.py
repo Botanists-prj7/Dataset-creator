@@ -19,7 +19,7 @@ import time
 
 tqdm.pandas()
 print('Reading Grid CSV')
-df = pd.read_csv('csv_files/DK_Grid_10000.csv')
+df = pd.read_csv('csv_files/TestDK_Grid_10000.csv')
 print('Setting WKT...')
 df['geometry'] = df['geometry'].apply(wkt.loads).progress_apply(lambda x: x)
 print('Converting projection')
@@ -42,7 +42,7 @@ gdf.set_geometry('geometry').progress_apply(lambda x: x)
 
 print('Finding intersecting points...')
 points_within = gpd.sjoin(gdf, soil, op='within', how='inner').progress_apply(lambda x: x)
-gpd.GeoDataFrame(points_within).to_csv('csv_files/plantsoilintersection.csv')
+gpd.GeoDataFrame(points_within).to_csv('csv_files/plantsoilintersection2.csv')
 
 
 """

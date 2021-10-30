@@ -85,7 +85,7 @@ for gridsize in gridsizes:
         output_dk_gdf_grid.plot(column = soiltypeColumnName) 
         plt.show()
         
-    if(update_csv_files):
-        save_gdf_to_csv_in_folder('csv_files',f'DK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
-        output_dk_gdf_grid.drop(soiltypeColumnName, inplace=True, axis=1)
-        save_gdf_to_csv_in_folder('csv_files',f'DK_Grid_{gridsize}.csv',output_dk_gdf_grid)
+
+        save_gdf_to_csv_in_folder('csv_files',f'testDK_Soiltypes_{gridsize}.csv',output_dk_gdf_grid)
+        #output_dk_gdf_grid.dropna(soiltypeColumnName, inplace=True, axis=1)
+        save_gdf_to_csv_in_folder('csv_files',f'testDK_Grid_{gridsize}.csv',output_dk_gdf_grid)
