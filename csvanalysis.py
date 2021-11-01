@@ -54,18 +54,14 @@ DK_Plant_gdf = csvTools.convert_csv_to_gdf('csv_files\\DK_Grid_10000.csv',True,'
 
 #DONE points_within.drop rows where index_right is None/NA or whatever NULL value
 plants_within_gdf = plants_within_gdf.dropna()
-print(DK_Plant_gdf.iloc(1168))
 
 for index,row in plants_within_gdf.iterrows():
     #Check om kolonne for planten findes i DK_Plant_GDF
-    index_right = int(row['index_right'])
-    print(DK_Plant_gdf.iloc(1168))
-    print(DK_Plant_gdf.iloc(index_right))
     if not row['species'] in DK_Plant_gdf.columns:
         #Hvis ikke tilføj kollonen med navn = plantens navn og værdi False i alle række
         DK_Plant_gdf[row['species']] = False
     #find række i DK_Plant_GDF fil med index_right 
-    DK_Plant_gdf.iloc(row['index_right'])[row['species']] = True
+    DK_Plant_gdf.iloc[row['index_right']][row['species']] = True
     #sæt værdi i kollonnen med plantens navn = True
     #Done XD
     if index == 10:
