@@ -10,7 +10,7 @@
 #knn.
 
 import json
-import geopy.distance
+#import geopy.distance
 from shapely.geometry import geo
 from pyproj import Transformer
 import pyproj
