@@ -4,9 +4,12 @@ from os import sep
 import geopandas as gpd
 import pandas as pd
 from matplotlib import pyplot as plt
+from shapely import wkt
 
+
+"""
 #Read files hehehehehe
-plants = pd.read_csv('outfiles/data_with_lat_long.csv', error_bad_lines = False, engine='python')
+plants = pd.read_csv('data/data_with_lat_long.csv', error_bad_lines = False, engine='python')
 
 #Make axis :O
 fig, ax = plt.subplots(1, figsize=(10,10))
@@ -25,6 +28,16 @@ ax.grid(which = "minor", b=True, alpha=0.6)
 plt.show()
 
 
+"""
+
+df = pd.read_csv('csv_files/DK_Grid_5000.csv')
+df.rename(columns={'Unnamed: 0' : 'id'}, inplace=True)
+gdf = gpd.GeoDataFrame(df)
+gdf.crs = "epsg:4326"
+
+df['geometry'] = df['geometry'].apply(wkt.loads)
+gdf = gpd.GeoDataFrame(df, crs="epsg:4326")
+print(gdf)
 
 
 

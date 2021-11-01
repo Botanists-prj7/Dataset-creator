@@ -18,7 +18,7 @@ def save_gdf_to_csv_in_folder(foldername: str,filename: str, gdf: gpd.GeoDataFra
     Path(foldername).mkdir(parents=True, exist_ok=True)
     file_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(file_dir, foldername, filename)
-    gdf.to_csv(file_path,index=False)
+    gdf.to_csv(file_path, index=False)
 
 def convert_gdf_to_gdfgrid(gdf: gpd.GeoDataFrame,distance_pr_cell_in_m: int, crs: str):
     xmin, ymin, xmax, ymax = gdf.total_bounds
@@ -80,15 +80,20 @@ crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
 
-gridsizes = [5000, 10000] #5km grid size
+gridsizes = [10000] #100km grid size
 update_csv_files = False #Set true if CSV files should be updated
 plot_grid = True
+using_mac = False
 
 for gridsize in gridsizes:
     soiltypeColumnName = 'soiltype'
     centerColumnName = 'center'
-    dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('data\\Jordart_200000_Shape\\jordart_200000.shp',crs)
-    dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize,crs) 
+    if using_mac: 
+        dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('data\\Jordart_200000_Shape\\jordart_200000.shp',crs)
+        dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize,crs) 
+    else:
+        dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('data/Jordart_200000_Shape/Jordart_200000.shp',crs)
+        dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize) 
 
     #Adding relevant data to our geodataframe
     dk_geodataframe_grid[soiltypeColumnName] = ''
