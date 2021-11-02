@@ -7,14 +7,13 @@ Created on Mon Oct 18 12:18:09 2021
 
 import geopandas as gpd
 
-maxTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/maxtempdatamonth.json')     
-minTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/mintempdatamonth.json')
-wind = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/winddatamonth.json')
-sun = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/sundatamonth.json')
-rain = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/raindatamonth.json')
+maxTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/data/MetereologiskData/maxtempdatamonth.json')     
+minTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/data/MetereologiskData/mintempdatamonth.json')
+wind = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/data/MetereologiskData/raindatamonth.json')
+sun = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/data/MetereologiskData/sundatamonth.json')
+rain = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/data/MetereologiskData/winddatamonth.json')
 
 def columnDropper(oldData):
-
     return oldData[['from','stationId','value','geometry']]
     
 def coordCreator(oldData):
