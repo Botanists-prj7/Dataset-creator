@@ -104,25 +104,25 @@ def tableRemaster(oldData, rename):
 maxTempSmall = columnDropper(maxTemp)
 maxTempCoord = coordCreator(maxTempSmall)
 maxTempCalculated = tableRemaster(maxTempCoord, 'maxTemp')
-maxTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/maxTempMonthMeans.csv')
+maxTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateMaxTemp.csv')
 
 minTempSmall = columnDropper(minTemp)
 minTempCoord = coordCreator(minTempSmall)
 minTempCalculated = tableRemaster(minTempCoord, 'minTemp')
-minTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/minTempMonthMeans.csv')
+minTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateMinTemp.csv')
 
 windSmall = columnDropper(wind)
 windCoord = coordCreator(windSmall)
 windCalculated = tableRemaster(windCoord, 'wind')
-windCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/windMonthMeans.csv')
+windCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateWind.csv')
 
 sunSmall = columnDropper(sun)
 sunCoord = coordCreator(sunSmall)
 sunCalculated = tableRemaster(sunCoord, 'sun')
-sunCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/sunMonthMeans.csv')
+sunCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateSun.csv')
 
 rainSmall = columnDropper(rain)
 rainCoord = coordCreator(rainSmall)
 rainCalculated = tableRemaster(rainCoord,'rain')
-rainCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/rainMonthMeans.csv')
+rainCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateRain.csv')
 
