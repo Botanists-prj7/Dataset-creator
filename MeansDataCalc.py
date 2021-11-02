@@ -13,6 +13,10 @@ wind = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/w
 sun = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/sundatamonth.json')
 rain = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/raindatamonth.json')
 
+def columnDropper(oldData):
+
+    return oldData[['from','stationId','value','geometry']]
+    
 def coordCreator(oldData):
     x = []
     y = []
@@ -95,20 +99,31 @@ def tableRemaster(oldData, rename):
         meanCalculated = meanCalculated.drop_duplicates(subset='stationId')
         meanCalculated.reset_index(drop=True,inplace=True)
         meanCalculator = stationArray = oldData[oldData['stationId']==0]
+        meanCalculated.drop(['from','value'], axis = 1, inplace = True)
     return meanCalculated
 
-
-maxTempCoord = coordCreator(maxTemp)
+maxTempSmall = columnDropper(maxTemp)
+maxTempCoord = coordCreator(maxTempSmall)
 maxTempCalculated = tableRemaster(maxTempCoord, 'maxTemp')
+maxTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/maxTempMonthMeans.csv')
 
-minTempCoord = coordCreator(minTemp)
+minTempSmall = columnDropper(minTemp)
+minTempCoord = coordCreator(minTempSmall)
 minTempCalculated = tableRemaster(minTempCoord, 'minTemp')
+minTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/minTempMonthMeans.csv')
 
-windCoord = coordCreator(wind)
+windSmall = columnDropper(wind)
+windCoord = coordCreator(windSmall)
 windCalculated = tableRemaster(windCoord, 'wind')
+windCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/windMonthMeans.csv')
 
-sunCoord = coordCreator(sun)
+sunSmall = columnDropper(sun)
+sunCoord = coordCreator(sunSmall)
 sunCalculated = tableRemaster(sunCoord, 'sun')
+sunCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/sunMonthMeans.csv')
 
-rainCoord = coordCreator(rain)
+rainSmall = columnDropper(rain)
+rainCoord = coordCreator(rainSmall)
 rainCalculated = tableRemaster(rainCoord,'rain')
+rainCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/rainMonthMeans.csv')
+
