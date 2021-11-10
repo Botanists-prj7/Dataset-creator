@@ -115,6 +115,7 @@ mintempnearestjoin = gpd.sjoin_nearest(grid, mintemp_gdf)
 print(gpd.GeoDataFrame(mintempnearestjoin))
 gpd.GeoDataFrame(mintempnearestjoin).to_csv('Dataset-creator/csv_files/mintempnearestgridcell.csv')
 """
+'''
 data1 = pd.read_csv('Dataset-creator/csv_files/rainnearestgridcell.csv', error_bad_lines=False, engine='python')
 data2 = pd.read_csv('Dataset-creator/csv_files/sunnearestgridcell.csv', error_bad_lines=False, engine='python')
 data3 = pd.read_csv('Dataset-creator/csv_files/windnearestgridcell.csv', error_bad_lines=False, engine='python')
@@ -143,7 +144,17 @@ print("donexd")
 print(mergedfiles.head())
 gpd.GeoDataFrame(mergedfiles).to_csv('Dataset-creator/csv_files/weatherstationsnearestgridcell.csv')
 
+'''
 
+weatherstationsfinal = pd.read_csv('Dataset/Dataset-creator/csv_files/finalcsv.csv')
+soilfinal = pd.read_csv('Dataset/Dataset-creator/csv_files/DK_Soiltypes_10000.csv')
+hallofinal = pd.merge(weatherstationsfinal, soilfinal,
+on = 'geometry',
+how = 'inner')
+print("donexd")
+hallofinal = pd.get_dummies(hallofinal, columns=['soiltype'], prefix='soiltype')
+print(hallofinal.head())
+gpd.GeoDataFrame(hallofinal).to_csv('Dataset/Dataset-creator/csv_files/hallofinalcsv.csv')
 
 
 """ weatherstations = pd.read_csv('Dataset-creator/csv_files/weatherstationsgridintersection.csv')
