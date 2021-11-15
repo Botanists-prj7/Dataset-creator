@@ -4,35 +4,10 @@ crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
 
-gridsizes = [10000] #100km grid size
-update_csv_files = False #Set true if CSV files should be updated
-plot_grid = True
+gridsizes = [5000] #100km grid size
+update_csv_files = True #Set true if CSV files should be updated
+plot_grid = False
 using_mac = False
-
-def sortingFunction(oldData, newData, oldLocData, newLocData, sortValue):
-    sortingArray = oldData[oldData[sortValue]==0]
-    unSortedArray = oldData[oldData[sortValue]==0]
-    oldLoc = oldData.columns.get_loc('TSYM')
-    newLoc = newData.columns.get_loc('soiltype')
-    #newData = newData.drop_duplicates(subset='soiltype', inplace=True)
-
-    #newData.reset_index(drop=True,inplace=True)
-    for i in range(len(oldData)):
-        for j in range(len(newData)):
-            if oldData.iloc[i,oldLoc] == newData.iloc[j,newLoc]:
-                sortingArray = sortingArray.append(oldData.iloc[[i]])
-                break
-            elif j == 1672: #5119
-                unSortedArray = unSortedArray.append(oldData.iloc[[i]])
-                print(unSortedArray)
-            else:
-                continue
-        
-    sortingArray.sort_values(sortValue, ascending=True, inplace=True, kind='quicksort')
-    unSortedArray.sort_values(sortValue, ascending=True, inplace=True, kind='quicksort')
-    sortingArray.append(unSortedArray)
-    hello = sortingArray.append(unSortedArray) 
-    return sortingArray 
 
 for gridsize in gridsizes:
     soiltypeColumnName = 'soiltype'
@@ -56,10 +31,10 @@ for gridsize in gridsizes:
         found_soiltype = get_soiltype_of_point(dk_soiltype_geodataframe,grid[centerColumnName]) 
         if not (found_soiltype is None):
             output_dk_grid.append([grid['geometry'], found_soiltype])        
-        else :
-            corner_soiltype = find_soiltype_of_cornerpoints(dk_soiltype_geodataframe,grid['geometry'])
-            if not (corner_soiltype is None):
-                output_dk_grid.append([grid['geometry'], corner_soiltype])        
+        #else :
+            #corner_soiltype = find_soiltype_of_cornerpoints(dk_soiltype_geodataframe,grid['geometry'])
+            #if not (corner_soiltype is None):
+                #output_dk_grid.append([grid['geometry'], corner_soiltype])        
         bar.next()
     bar.finish()    
 
