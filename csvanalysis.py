@@ -16,12 +16,16 @@ import rtree
 #from tqdm import tqdm, tqdm_notebook
 import time
 import csvTools
-#from progress.bar import Bar
+from progress.bar import Bar
 import gridmaker
 
 #dk_grid_gdf = csvTools.convert_csv_to_gdf('csv_files\\DK_Grid_10000.csv',True,'EPSG:3857')
 
 
+test = pd.read_csv('csv_files/hallofinalcsv.csv')
+print(test.columns.get_loc('Salix caprea'))
+
+"""
 #tqdm.pandas()
 print('Reading Grid CSV')
 df = pd.read_csv('csv_files/DK_Grid_10000.csv')
@@ -49,14 +53,12 @@ print('Finding intersecting points...')
 points_within = gpd.sjoin(gdf, soil, predicate='within', how='inner')
 #gpd.GeoDataFrame(points_within).to_csv('csv_files/plantsoilintersection2.csv')
 
+"""
+""" 
 
-""" plants_within_gdf = csvTools.convert_csv_to_gdf('csv_files/plantsoilintersection2.csv',True,'EPSG:3857')
+plants_within_gdf = csvTools.convert_csv_to_gdf('csv_files/weatherstaiondroppednull.csv',True,'EPSG:3857')
 #DK_Plant_GDF = DK_GRID
-DK_Plant_gdf = csvTools.convert_csv_to_gdf('csv_files/DK_Grid_10000.csv',True,'EPSG:3857')
-
-#points_within.drop rows where index_right is None/NA or whatever NULL value
-plants_within_gdf = plants_within_gdf.dropna()
-plants_within_gdf = plants_within_gdf.drop(columns=['decimalLongitude','decimalLatitude','geometry'])
+DK_Plant_gdf = csvTools.convert_csv_to_gdf('csv_files/DK_Plant_10000.csv',True,'EPSG:3857')
 
 bar = Bar('Finding soiltype of all gridcells', max=len(plants_within_gdf.index))
 for index,row in plants_within_gdf.iterrows():
@@ -76,9 +78,9 @@ bar.finish()
 print(DK_Plant_gdf.head())
 #Gem oprettet geodataframe som en CSV med filnat DK_PLants_10k
 gridmaker.save_gdf_to_csv_in_folder('csv_files','DK_Plant_10000.csv',DK_Plant_gdf)
- """
+ """"""
 
-"""
+
 plants = pd.read_csv('/Users/kaspermadsen/Desktop/data/outfiles/floradanica.csv', error_bad_lines=False, sep='\t', engine='python')
 
  
