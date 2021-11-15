@@ -74,3 +74,29 @@ def find_soiltype_of_cornerpoints(gdf: gpd.GeoDataFrame, polygon: gpd.GeoSeries)
 def add_center_to_gdf(gdf: gpd.GeoDataFrame):
     gdf['center'] = gdf.centroid
     return gdf
+
+    
+def sortingFunction(oldData, newData, oldLocData, newLocData, sortValue):
+    sortingArray = oldData[oldData[sortValue]==0]
+    unSortedArray = oldData[oldData[sortValue]==0]
+    oldLoc = oldData.columns.get_loc('TSYM')
+    newLoc = newData.columns.get_loc('soiltype')
+    #newData = newData.drop_duplicates(subset='soiltype', inplace=True)
+
+    #newData.reset_index(drop=True,inplace=True)
+    for i in range(len(oldData)):
+        for j in range(len(newData)):
+            if oldData.iloc[i,oldLoc] == newData.iloc[j,newLoc]:
+                sortingArray = sortingArray.append(oldData.iloc[[i]])
+                break
+            elif j == 1672: #5119
+                unSortedArray = unSortedArray.append(oldData.iloc[[i]])
+                #print(unSortedArray)
+            else:
+                continue
+        
+    sortingArray.sort_values(sortValue, ascending=True, inplace=True, kind='quicksort')
+    unSortedArray.sort_values(sortValue, ascending=True, inplace=True, kind='quicksort')
+    sortingArray.append(unSortedArray)
+    arrayToBeReturned = sortingArray.append(unSortedArray) 
+    return arrayToBeReturned 
