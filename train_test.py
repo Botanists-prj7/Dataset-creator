@@ -6,6 +6,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
+def print_confusion_matrix(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    print('True positive = ', cm[0][0])
+    print('False positive = ', cm[0][1])
+    print('False negative = ', cm[1][0])
+    print('True negative = ', cm[1][1])
+
 data = pd.read_csv('csv_files/hallofinalcsv.csv')
 
 #print(data.head(10))
@@ -43,7 +50,6 @@ print('y_train: ', y_train.shape)
 print('x_test: ', x_test.shape)
 print('y_test: ', y_test.shape)
 
-
 rfc = RandomForestClassifier(n_estimators = 10000, random_state= 10, max_depth = None, oob_score = True, n_jobs = -1)
 rfc.fit(x_train, y_train)
 
@@ -51,14 +57,21 @@ predictions = rfc.predict(x_test)
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
+print('confusion matrix: ')
+print(confusion_matrix(y_test,predictions))
+print_confusion_matrix(y_test,predictions)
 
-print('confusion matrix: ', confusion_matrix(y_test, predictions))
 
 feature_list = list(data.columns)
 importances = list(rfc.feature_importances_)
 feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
 feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
-[print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+counter = 0
+for pair in feature_importances:
+    if counter == 50:
+        break
+    print('Variable: {:20} Importance: {}'.format(*pair))
+    counter+=1
 
 
 #data1 = data.dropna()
