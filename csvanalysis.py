@@ -20,15 +20,11 @@ from progress.bar import Bar
 import gridmaker
 
 #dk_grid_gdf = csvTools.convert_csv_to_gdf('csv_files\\DK_Grid_10000.csv',True,'EPSG:3857')
+""" 
 
-
-test = pd.read_csv('csv_files/hallofinalcsv.csv')
-print(test.columns.get_loc('Salix caprea'))
-
-"""
 #tqdm.pandas()
 print('Reading Grid CSV')
-df = pd.read_csv('csv_files/DK_Grid_10000.csv')
+df = pd.read_csv('csv_files/DK_Grid_5000.csv')
 print('Setting WKT...')
 df['geometry'] = df['geometry'].apply(wkt.loads)#.progress_apply(lambda x: x)
 print('Converting projection')
@@ -39,7 +35,7 @@ soil = soil.to_crs('EPSG:3857')#.progress_apply(lambda x: x)
 
 
 print('Converting plants csv')
-df2 = pd.read_csv('data/data_with_lat_long.csv')
+df2 = pd.read_csv('csv_files/updated_full_plantsdata.csv')
 newdf = df2
 print('Applying geometry conversion for plants')
 gdf = gpd.GeoDataFrame(newdf, geometry=gpd.points_from_xy(df2['decimalLongitude'], df2['decimalLatitude']), crs='EPSG:4326')
@@ -51,25 +47,23 @@ gdf.set_geometry('geometry')
 
 print('Finding intersecting points...')
 points_within = gpd.sjoin(gdf, soil, predicate='within', how='inner')
-#gpd.GeoDataFrame(points_within).to_csv('csv_files/plantsoilintersection2.csv')
-
-"""
-""" 
-
-plants_within_gdf = csvTools.convert_csv_to_gdf('csv_files/weatherstaiondroppednull.csv',True,'EPSG:3857')
+gpd.GeoDataFrame(points_within).to_csv('csv_files/full_plants_grid_intersection.csv')
+ """
+ 
+plants_within_gdf = csvTools.convert_csv_to_gdf('csv_files/full_plants_grid_intersection.csv',True,'EPSG:3857')
 #DK_Plant_GDF = DK_GRID
-DK_Plant_gdf = csvTools.convert_csv_to_gdf('csv_files/DK_Plant_10000.csv',True,'EPSG:3857')
+DK_Plant_gdf = csvTools.convert_csv_to_gdf('csv_files/DK_Grid_5000.csv',True,'EPSG:3857')
 
 bar = Bar('Finding soiltype of all gridcells', max=len(plants_within_gdf.index))
 for index,row in plants_within_gdf.iterrows():
     #Check om kolonne for planten findes i DK_Plant_GDF
     
-    if not row['species'] in DK_Plant_gdf.columns:
+    if not row['scientificName'] in DK_Plant_gdf.columns:
         #Hvis ikke tilføj kollonen med navn = plantens navn og værdi False i alle række
-        DK_Plant_gdf[row['species']] = False
+        DK_Plant_gdf[row['scientificName']] = False
     #find række i DK_Plant_GDF fil med index_right 
     #sæt værdi i kollonnen med plantens navn = True
-    DK_Plant_gdf.loc[row['index_right'],[row['species']]] = True
+    DK_Plant_gdf.loc[row['index_right'],[row['scientificName']]] = True
     bar.next()
     #if index == 10:
         #break
@@ -77,26 +71,24 @@ bar.finish()
 
 print(DK_Plant_gdf.head())
 #Gem oprettet geodataframe som en CSV med filnat DK_PLants_10k
-gridmaker.save_gdf_to_csv_in_folder('csv_files','DK_Plant_10000.csv',DK_Plant_gdf)
- """"""
-
-
-plants = pd.read_csv('/Users/kaspermadsen/Desktop/data/outfiles/floradanica.csv', error_bad_lines=False, sep='\t', engine='python')
+gridmaker.save_gdf_to_csv_in_folder('csv_files','DK_Plant_5000.csv',DK_Plant_gdf)
+ 
+"""
+plants = pd.read_csv('csv_files/plantscomplete.csv', error_bad_lines=False, sep='\t', engine='python')
 
  
 for df in plants:
     print(df)
 newplants = plants[['decimalLongitude','decimalLatitude','species']]
-newplants.to_csv('outfiles/data_with_lat_long.csv')
+newplants.to_csv('outfiles/plantscomplete_with_lat_long.csv')
 
 newplants = plants[['decimalLongitude','decimalLatitude','species']]
 
-newplants['geometry'] = "Point"+"(" + newplants['decimalLatitude'].map(str) + ', ' + newplants['decimalLongitude'].map(str) + ")"}
+newplants['geometry'] = "Point"+"(" + newplants['decimalLatitude'].map(str) + ', ' + newplants['decimalLongitude'].map(str) + ")"
 newnewplants = newplants[['species','geometry']]
 
 
-newnewplants.to_csv('csv_files/plantsdata.csv')
- 
+newnewplants.to_csv('csv_files/plants_complete_geometry.csv')
 plants = pd.read_csv('floradanicaupdate.csv')
 print(plants)
 list_of_plants = pd.DataFrame([])
@@ -107,5 +99,4 @@ for df in pd.read_csv("floradanica.csv", error_bad_lines=False, sep='\t', engine
 print(list_of_plants.sort_values(by="kingdom", ascending=False).head(10))
 
 print("Total rows: " + str(sum(list_of_plants)))
-
-"""
+"""  

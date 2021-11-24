@@ -1,11 +1,16 @@
+from math import e
+from numpy.core.numeric import cross
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import KFold 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import csvTools
+from sklearn.model_selection import cross_val_score
+
 
 def print_confusion_matrix(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
@@ -23,7 +28,7 @@ thePlantToFind = input('Indtast en plante her: ')
 
 #plant_gdf_grid = csvTools.convert_csv_to_gdf('csv_files\\DK_Plant_10000.csv',True,crs=crs)
 #plant_gdf_grid = plant_gdf_grid.drop(columns=['geometry'])
-data = csvTools.convert_csv_to_gdf('csv_files\\completedataset_DK_with_occurences_10K.csv',True,crs=crs)
+data = csvTools.convert_csv_to_gdf('csv_files/completedataset_DK_with_occurences_10K.csv',True,crs=crs)
 data = data.drop(['geometry','Unnamed: 0'], axis = 1)
 #dataNoPlants = data.drop(columns=plant_gdf_grid.columns)
 
@@ -35,6 +40,9 @@ print(y.shape)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.25, random_state = 42)
 
+k = 8
+kf = KFold(n_splits=k, random_state=None)
+
 print('x_train: ', x_train.shape)
 print('y_train: ', y_train.shape)
 print('x_test: ', x_test.shape)
@@ -45,14 +53,16 @@ rfc.fit(x_train, y_train)
 
 predictions = rfc.predict(x_test)
 probality = rfc.predict_proba(x_test)
-print("Probability: ", probality)
+for i in range(len(x_test)):
+    print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
 print(confusion_matrix(y_test,predictions))
 print_confusion_matrix(y_test,predictions)
-
+result = cross_val_score(rfc , x, y, cv = kf)
+""" 
 
 feature_list = list(data.columns)
 importances = list(rfc.feature_importances_)
@@ -66,6 +76,9 @@ for pair in feature_importances:
     print('Variable: {:20} Importance: {}'.format(*pair))
     counter+=1
 
+ """
+
+print("Cross val score: {}".format(result.mean()),result)
 #data1 = data.dropna()
 
 #print(data1.isnull().values.sum())
