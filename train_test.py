@@ -49,7 +49,7 @@ print('y_train: ', y_train.shape)
 print('x_test: ', x_test.shape)
 print('y_test: ', y_test.shape)
 
-rfc = RandomForestClassifier(n_estimators = 10000, random_state= 42)
+rfc = RandomForestClassifier(n_estimators = 1000, random_state= 42)
 rfc.fit(x_train, y_train)
 
 predictions = rfc.predict(x_test)
@@ -62,7 +62,6 @@ trueplotsvalues = []
 for index, values in enumerate(predictions):
  if values == True:
     trueplots.append(index)
-    continue
 
 compare = pd.read_csv('csv_files/hallofinalcsv.csv')
 compare = compare['geometry']
@@ -71,18 +70,18 @@ for i in trueplots:
         if i == index:
             trueplotsvalues.append(geometry)
 dataplot = pd.DataFrame({'geometry':trueplotsvalues})
-dataplot.to_csv('csv_files/dataplottest.csv')
+dataplot.to_csv('csv_files/dataplottest2.csv')
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
 print(confusion_matrix(y_test,predictions))
 print_confusion_matrix(y_test,predictions)
-for index, values in enumerate(probality):
-  print(index, values)
+#for index, values in enumerate(probality):
+#  print(index, values)
 
 
-result = cross_val_score(rfc , x, y, cv = kf)
+#result = cross_val_score(rfc , x, y, cv = kf)
 
 
 """ 
@@ -101,7 +100,7 @@ for pair in feature_importances:
 
  """
 
-print("Cross val score: {}".format(result.mean()),result)
+#print("Cross val score: {}".format(result.mean()),result)
 #data1 = data.dropna()
 
 #print(data1.isnull().values.sum())
