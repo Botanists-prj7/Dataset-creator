@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import csvTools
 from sklearn.model_selection import cross_val_score
+import geopandas as gpd
 
 
 def print_confusion_matrix(y_true, y_pred):
@@ -28,7 +29,7 @@ thePlantToFind = input('Indtast en plante her: ')
 
 #plant_gdf_grid = csvTools.convert_csv_to_gdf('csv_files\\DK_Plant_10000.csv',True,crs=crs)
 #plant_gdf_grid = plant_gdf_grid.drop(columns=['geometry'])
-data = csvTools.convert_csv_to_gdf('csv_files/completedataset_DK_with_occurences_10K.csv',True,crs=crs)
+data = csvTools.convert_csv_to_gdf('csv_files/hallofinalcsv.csv',True,crs=crs)
 data = data.drop(['geometry','Unnamed: 0'], axis = 1)
 #dataNoPlants = data.drop(columns=plant_gdf_grid.columns)
 
@@ -53,15 +54,37 @@ rfc.fit(x_train, y_train)
 
 predictions = rfc.predict(x_test)
 probality = rfc.predict_proba(x_test)
-for i in range(len(x_test)):
-    print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
+trueplots = []
+trueplotsvalues = []
+#for i in range(len(x_test)):
+#    print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
+
+for index, values in enumerate(predictions):
+ if values == True:
+    trueplots.append(index)
+    continue
+
+compare = pd.read_csv('csv_files/hallofinalcsv.csv')
+compare = compare['geometry']
+for i in trueplots:
+    for index,geometry in enumerate(compare):
+        if i == index:
+            trueplotsvalues.append(geometry)
+dataplot = pd.DataFrame({'geometry':trueplotsvalues})
+dataplot.to_csv('csv_files/dataplottest.csv')
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
 print(confusion_matrix(y_test,predictions))
 print_confusion_matrix(y_test,predictions)
+for index, values in enumerate(probality):
+  print(index, values)
+
+
 result = cross_val_score(rfc , x, y, cv = kf)
+
+
 """ 
 
 feature_list = list(data.columns)
@@ -83,10 +106,46 @@ print("Cross val score: {}".format(result.mean()),result)
 
 #print(data1.isnull().values.sum())
 
-'''
-print(data['species'].value_counts())
+plants = pd.read_csv('data/data_with_lat_long.csv', error_bad_lines = False, engine='python')
+plantsdub = plants[(plants['species']!=thePlantToFind)].index
+plants.drop(plantsdub, inplace=True)
 
-print(data['species'].value_counts().count())
+#Make axis :O
+fig, ax = plt.subplots(1, figsize=(10,10))
 
-data.info()
-''' 
+#plot map on axis
+countries = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+countries[countries["name"] == "Denmark"].plot(color="lightgrey", ax=ax)
+
+plants.plot(x="decimalLongitude", y="decimalLatitude", kind="scatter", colormap='PiYG', ax=ax)
+
+#add grid XD
+ax.grid(which = "major", b=True, alpha=0.6)
+plt.minorticks_on()
+ax.grid(which = "minor", b=True, alpha=0.6)
+
+plt.show()
+
+########PLOT DETTE LORTE KORT HER DER IKKE VIRKER LOL
+
+f, ax = plt.subplots(1)
+
+
+#plot map on axis
+countries = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+countries[countries["name"] == "Denmark"].plot(color="lightgrey", ax=ax)
+
+dataplot = gpd.GeoSeries.from_wkt(dataplot['geometry'])
+gdf_plot = gpd.GeoDataFrame(dataplot, geometry=dataplot, crs="EPSG:3857")
+
+print(gdf_plot.describe())
+
+gdf_plot.plot(ax=ax)
+
+#add grid XD
+ax.grid(which = "major", b=True, alpha=0.6)
+plt.minorticks_on()
+ax.grid(which = "minor", b=True, alpha=0.6)
+
+
+
