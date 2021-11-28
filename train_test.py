@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 import csvTools
 from sklearn.model_selection import cross_val_score
 import geopandas as gpd
+from sklearn.utils import shuffle
 
 
 def print_confusion_matrix(y_true, y_pred):
@@ -25,6 +26,13 @@ crs_earth = 'EPSG:4326'
 crs_maps = 'EPSG:3857'
 crs = crs_maps
 
+#Selinum dubium <-- Kun på amar. Meget få forekomster (8)
+#Salix caprea <-- Over hele Danmark. Mange observationer. (2000+) 
+#Urtica dioica <-- Stornælde MANGE observationer (5000+)
+#Dactylis glomerata <-- Hundgræs, mange oberservationer (5000+)
+#Crambe maritima <-- Strandkål få observationer (400+) Vokser kun ved kysten.
+
+
 thePlantToFind = input('Indtast en plante her: ')
 
 #plant_gdf_grid = csvTools.convert_csv_to_gdf('csv_files\\DK_Plant_10000.csv',True,crs=crs)
@@ -32,6 +40,11 @@ thePlantToFind = input('Indtast en plante her: ')
 data = csvTools.convert_csv_to_gdf('csv_files/hallofinalcsv.csv',True,crs=crs)
 data = data.drop(['geometry','Unnamed: 0'], axis = 1)
 #dataNoPlants = data.drop(columns=plant_gdf_grid.columns)
+
+""" x_shuffled = shuffle(x, random_state=42)
+y_shuffled = shuffle(y, random_state=42)
+
+x_train, x_test, y_train, y_test = train_test_split(x_shuffled, y_shuffled, test_size = 0.30, random_state = 42) """
 
 x = np.array(data.drop(columns=[thePlantToFind]))
 y = np.array(data[thePlantToFind])
@@ -65,12 +78,16 @@ for index, values in enumerate(predictions):
 
 compare = pd.read_csv('csv_files/hallofinalcsv.csv')
 compare = compare['geometry']
-for i in trueplots:
-    for index,geometry in enumerate(compare):
-        if i == index:
-            trueplotsvalues.append(geometry)
+for index,geometry in enumerate(compare):
+    if index in trueplots:
+        #print(geometry)
+        trueplotsvalues.append(geometry)
 dataplot = pd.DataFrame({'geometry':trueplotsvalues})
 dataplot.to_csv('csv_files/dataplottest2.csv')
+
+print("length pred", len(predictions))
+print("length compare", len(compare))
+print("length y_train", len(y_train))
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
