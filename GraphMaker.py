@@ -12,8 +12,8 @@ data = pd.read_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/cs
 
 
 #print(data.drop('geometry', axis = 1).sum(axis=0)[4:9])
-print(data.drop('geometry', axis = 1).sum(axis=0)[4:9].plot()) #laver graf med plantarter på x aksen og grid celler op ad y aksen
+print(data.drop('geometry', axis = 1).sum(axis=0)[:20].plot(kind='bar', xlabel=None)) #laver graf med plantarter på x aksen og grid celler op ad y aksen
 
-
-#print(data.drop('geometry', axis=1).sum(axis=1)[:20])
-print(data.drop('geometry', axis=1).sum(axis=1)[:20].plot(kind='bar', include_bool= True)) #lave en graf med alle gridceller på x akse og observationer på y aksen
+data2 = data.drop('geometry', axis=1).sum(axis=1) 
+#print(data2.sort_values()[:20])
+print(data2.sort_values(ascending=False)[:20].plot(kind='bar')) #lave en graf med alle gridceller på x akse og observationer på y aksen
