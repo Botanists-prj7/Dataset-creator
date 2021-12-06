@@ -29,7 +29,7 @@ crs = crs_maps
 #Selinum dubium <-- Kun på amar. Meget få forekomster (8)
 #Salix caprea <-- Over hele Danmark. Mange observationer. (2000+) 
 #Urtica dioica <-- Stornælde MANGE observationer (5000+)
-#Dactylis glomerata <-- Hundgræs, mange oberservationer (5000+)
+#Dactylis glomerata <-- Hundegræs, mange oberservationer (5000+)
 #Crambe maritima <-- Strandkål få observationer (400+) Vokser kun ved kysten.
 
 
@@ -54,6 +54,9 @@ print(y.shape)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.25, random_state = 42)
 
+new_x_train = np.delete(x_train, [0, 1, 2, 3], axis = 1)
+new_x_test  = np.delete(x_test, [0, 1 , 2, 3], axis = 1)
+
 k = 8
 kf = KFold(n_splits=k, random_state=None)
 
@@ -63,33 +66,25 @@ print('x_test: ', x_test.shape)
 print('y_test: ', y_test.shape)
 
 rfc = RandomForestClassifier(n_estimators = 1000, random_state= 42)
-rfc.fit(x_train, y_train)
+rfc.fit(new_x_train, y_train)
 
-predictions = rfc.predict(x_test)
-probality = rfc.predict_proba(x_test)
+predictions = rfc.predict(new_x_test)
+probality = rfc.predict_proba(new_x_test)
 trueplots = []
-trueplotsvalues = []
+for index, values in enumerate(predictions):
+    if values:
+        geo = x_test[index][3]
+        trueplots.append(geo)
 #for i in range(len(x_test)):
 #    print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
 
-for index, values in enumerate(predictions):
- if values == True:
-    trueplots.append(index)
 
-compare = pd.read_csv('csv_files/hallofinalcsv.csv')
-compare = compare['geometry']
-for index,geometry in enumerate(compare):
-    if index in trueplots:
-        #print(geometry)
-        trueplotsvalues.append(geometry)
-dataplot = pd.DataFrame({'geometry':trueplotsvalues})
+dataplot = pd.DataFrame({'geometry':trueplots})
 dataplot.to_csv('csv_files/dataplottest2.csv')
 
-print("length pred", len(predictions))
-print("length compare", len(compare))
-print("length y_train", len(y_train))
 
-print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(x_train)))
+
+print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(new_x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
 print(confusion_matrix(y_test,predictions))
@@ -146,7 +141,6 @@ plt.show()
 
 f, ax = plt.subplots(1)
 
-
 #plot map on axis
 countries = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
 countries[countries["name"] == "Denmark"].plot(color="lightgrey", ax=ax)
@@ -155,7 +149,6 @@ dataplot = gpd.GeoSeries.from_wkt(dataplot['geometry'])
 gdf_plot = gpd.GeoDataFrame(dataplot, geometry=dataplot, crs="EPSG:3857")
 
 print(gdf_plot.describe())
-
 gdf_plot.plot(ax=ax)
 
 #add grid XD
