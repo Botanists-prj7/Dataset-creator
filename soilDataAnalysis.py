@@ -20,7 +20,6 @@ DK_Total_Area_km2 = DK_Soiltypes_SHP_Total_Area_by_soiltype['Area_km2'].sum()
 DK_Grid5k_rows_cell_count = len(DK_Soiltypes_Grid5k.index)
 DK_Grid10k_rows_cell_count = len(DK_Soiltypes_Grid10k.index)
 
-#fig, axes = plt.subplots(nrows=1, ncols=3)
 DK_Grid10k_Grids_By_Soiltype = DK_Soiltypes_Grid10k['soiltype'].value_counts().sort_values()
 DK_Grid5k_Grids_By_Soiltype = DK_Soiltypes_Grid5k['soiltype'].value_counts().sort_values()
 DK_shp_area_km2_By_Soiltype = DK_Soiltypes_SHP_Total_Area_by_soiltype['Area_km2'].sort_values()
@@ -33,18 +32,16 @@ DK_Grid10k_Grids_By_Soiltype_Percentage.name = '10 km grid'
 DK_Grid5k_Grids_By_Soiltype_Percentage.name = '5 km grid'
 DK_shp_area_km2_By_Soiltype_Percentage.name = 'GEUS Shapefile'
 
-#DK_Grid10k_Grids_By_Soiltype_Percentage.plot(kind="bar", grid=True)
-#DK_Grid5k_Grids_By_Soiltype_Percentage.plot(kind="bar", grid=True)
-#DK_shp_area_km2_By_Soiltype_Percentage.plot(kind="bar", grid=True)
-
 concatinatedSeries = pd.concat([DK_Grid10k_Grids_By_Soiltype_Percentage,DK_Grid5k_Grids_By_Soiltype_Percentage,DK_shp_area_km2_By_Soiltype_Percentage], axis=1).sort_values('GEUS Shapefile')
 
-print(concatinatedSeries)
-
-concatinatedSeries.plot(kind='bar', xlabel='Soiltype', ylabel='Percentage of total area')
+#print(concatinatedSeries)
+concatinatedSeries.plot(kind='bar', xlabel='Soiltype', ylabel='Percentage of total area', title='Percentage of total area covered by soiltypes')
 plt.show()
 
-concatinatedSeries.dropna(inplace=True)
+#concatinatedSeries.fillna(0,inplace=True)
+#print(concatinatedSeries)
 
-concatinatedSeries.plot(kind='bar', xlabel='Soiltype', ylabel='Percentage of total area')
+
+concatinatedSeries.dropna(inplace=True)
+concatinatedSeries.plot(kind='bar', xlabel='Soiltype', ylabel='Percentage of total area', title='Percentage of total area covered by soiltypes without NA values')
 plt.show()

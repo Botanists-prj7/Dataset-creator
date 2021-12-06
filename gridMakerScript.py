@@ -31,10 +31,10 @@ for gridsize in gridsizes:
         found_soiltype = get_soiltype_of_point(dk_soiltype_geodataframe,grid[centerColumnName]) 
         if not (found_soiltype is None):
             output_dk_grid.append([grid['geometry'], found_soiltype])        
-        #else :
-            #corner_soiltype = find_soiltype_of_cornerpoints(dk_soiltype_geodataframe,grid['geometry'])
-            #if not (corner_soiltype is None):
-                #output_dk_grid.append([grid['geometry'], corner_soiltype])        
+        else :
+            corner_soiltype = find_soiltype_of_cornerpoints(dk_soiltype_geodataframe,grid['geometry'])
+            if not (corner_soiltype is None):
+                output_dk_grid.append([grid['geometry'], corner_soiltype])        
         bar.next()
     bar.finish()    
 
