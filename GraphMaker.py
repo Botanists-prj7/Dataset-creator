@@ -17,7 +17,7 @@ data2.reset_index()
 print(data2.sum(axis=0).plot(kind='bar')) 
 '''
 
-#print(data.drop('geometry', axis = 1).sum(axis=0)[:].plot(kind='bar', xlabel=None))#laver graf med plantarter på x aksen og grid celler op ad y aksen
+print(data.drop('geometry', axis = 1).sum(axis=0)[:].plot(kind='bar', xlabel=None))#laver graf med plantarter på x aksen og grid celler op ad y aksen
 
 #data2 = data.drop('geometry', axis=1).sum(axis=1) 
 #print(data2.sort_values()[:20])
