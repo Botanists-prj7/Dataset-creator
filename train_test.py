@@ -13,7 +13,7 @@ import csvTools
 from sklearn.model_selection import cross_val_score
 import geopandas as gpd
 from sklearn.utils import shuffle
-
+import seaborn as sns
 
 def print_confusion_matrix(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
@@ -140,6 +140,8 @@ countries[countries["name"] == "Denmark"].plot(color="lightgrey", ax=ax)
 
 plants.plot(x="decimalLongitude", y="decimalLatitude", kind="scatter", colormap='PiYG', ax=ax)
 
+
+
 #add grid XD
 ax.grid(which = "major", b=True, alpha=0.6)
 plt.minorticks_on()
@@ -148,7 +150,7 @@ ax.grid(which = "minor", b=True, alpha=0.6)
 plt.show()
 
 ########PLOT DETTE LORTE KORT HER DER IKKE VIRKER LOL
-
+'''
 f, ax = plt.subplots(1)
 
 #plot map on axis
@@ -166,5 +168,17 @@ ax.grid(which = "major", b=True, alpha=0.6)
 plt.minorticks_on()
 ax.grid(which = "minor", b=True, alpha=0.6)
 
+'''
+
+gdf = csvTools.convert_csv_to_gdf('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/completedataset_DK_with_occurences_10K.csv', True, 'EPSG:3857')
+gdf.geometry = gdf['geometry']
+gdf = gdf.to_crs('EPSG:4326')
+
+
+gdf['x'] = gdf['geometry'].centroid.x
+gdf['y'] = gdf['geometry'].centroid.y
+
+
+sns.kdeplot(data=gdf, x='x', y= 'y', fill= True, cmap = 'coolwarm', alpha = 0.3, gridsize = 200, levels = 20, ax = ax)
 
 
