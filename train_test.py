@@ -1,4 +1,5 @@
 from math import e
+from geopandas import geodataframe
 from numpy.core.numeric import cross
 import pandas as pd
 import numpy as np
@@ -38,7 +39,7 @@ thePlantToFind = input('Indtast en plante her: ')
 #plant_gdf_grid = csvTools.convert_csv_to_gdf('csv_files\\DK_Plant_10000.csv',True,crs=crs)
 #plant_gdf_grid = plant_gdf_grid.drop(columns=['geometry'])
 data = csvTools.convert_csv_to_gdf('csv_files/hallofinalcsv.csv',True,crs=crs)
-data = data.drop(['geometry','Unnamed: 0'], axis = 1)
+#data = data.drop(['geometry','Unnamed: 0'], axis = 1)
 #dataNoPlants = data.drop(columns=plant_gdf_grid.columns)
 
 """ x_shuffled = shuffle(x, random_state=42)
@@ -69,25 +70,34 @@ rfc = RandomForestClassifier(n_estimators = 1000, random_state= 42)
 rfc.fit(new_x_train, y_train)
 
 predictions = rfc.predict(new_x_test)
-probality = rfc.predict_proba(new_x_test)
+probabilities = rfc.predict_proba(new_x_test)
 trueplots = []
+probabilitylist = []
 for index, values in enumerate(predictions):
-    if values:
+    #for probality in enumerate(probabilities):
         geo = x_test[index][3]
+        prob = probabilities[index][1]
+        probabilitylist.append(prob)
         trueplots.append(geo)
+
+print(trueplots)
+print(probabilitylist)            
 #for i in range(len(x_test)):
 #    print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
 
 
-dataplot = pd.DataFrame({'geometry':trueplots})
+dataplot = pd.DataFrame({'geometry':trueplots,'prediction':probabilitylist})
 dataplot.to_csv('csv_files/dataplottest2.csv')
 
-
+print(probabilities[1])
+print(x_test[3])
+#allPlotsGDF = geodataframe({'geometry':x_test[3],'probality':probabilities[1]})
+#print(allPlotsGDF)
 
 print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(new_x_train)))
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
-print(confusion_matrix(y_test,predictions))
+print(confusion_matrix(y_test,predictions,labels=[1,0]))
 print_confusion_matrix(y_test,predictions)
 #for index, values in enumerate(probality):
 #  print(index, values)
