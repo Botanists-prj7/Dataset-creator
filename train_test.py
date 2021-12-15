@@ -17,13 +17,8 @@ from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
 from sklearn.datasets import make_classification
 import heatMapResults
+import randomForestClassifierHelper
 
-def print_confusion_matrix(y_true, y_pred):
-    cm = confusion_matrix(y_true, y_pred)
-    print('True positive = ', cm[1][1])
-    print('False positive = ', cm[0][1])
-    print('False negative = ', cm[1][0])
-    print('True negative = ', cm[0][0])
 
 
 crs_earth = 'EPSG:4326'
@@ -37,10 +32,10 @@ crs = crs_maps
 #Crambe maritima <-- Strandkål få observationer (400+) Vokser kun ved kysten.
 
 #Rosa spinosissima
-#Rumex sanguineus(wood dock)
-#Urtica dioica <-- Stornælde MANGE observationer (5000+)
+#Rumex sanguineus       (wood dock)
+#Urtica dioica          <-- Stornælde MANGE observationer (5000+)
 #Impatiens parviflora
-#Crambe maritima <-- Strandkål få observationer (400+) Vokser kun ved kysten.
+#Crambe maritima        <-- Strandkål få observationer (400+) Vokser kun ved kysten.
 
 
 thePlantToFind = input('Indtast en plante her: ')
@@ -129,8 +124,7 @@ print('accuracy score of training set: ', accuracy_score(y_train, rfc.predict(ne
 
 print('accuracy score of test set: ', accuracy_score(y_test, predictions))
 print('confusion matrix: ')
-print(confusion_matrix(y_test,predictions,labels=[1,0]))
-print_confusion_matrix(y_test,predictions)
+randomForestClassifierHelper.print_confusion_matrix(y_test,predictions)
 #for index, values in enumerate(probality):
 #  print(index, values)
 
