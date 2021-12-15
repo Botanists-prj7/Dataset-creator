@@ -16,6 +16,7 @@ from sklearn.utils import shuffle
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
 from sklearn.datasets import make_classification
+import heatMapResults
 
 def print_confusion_matrix(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
@@ -46,7 +47,7 @@ thePlantToFind = input('Indtast en plante her: ')
 
 #plant_gdf_grid = csvTools.convert_csv_to_gdf('csv_files\\DK_Plant_10000.csv',True,crs=crs)
 #plant_gdf_grid = plant_gdf_grid.drop(columns=['geometry'])
-data = csvTools.convert_csv_to_gdf('/Users/christianekiel/Desktop/7. semester/Projekt/Dataset/Dataset-creator/csv_files/hallofinalcsv.csv',True,crs=crs)
+data = csvTools.convert_csv_to_gdf('csv_files\hallofinalcsv.csv',True,crs=crs)
 #data = data.drop(['geometry','Unnamed: 0'], axis = 1)
 #dataNoPlants = data.drop(columns=plant_gdf_grid.columns)
 
@@ -78,11 +79,11 @@ rfc = RandomForestClassifier(random_state=42)
 rfc.fit(new_x_train, y_train)
 
 
-param_grid = {"n_estimators": [100, 300, 500, 1000],
-              "max_depth": [3, 5, 7, 10, 30, 50]}
-HGS = HalvingGridSearchCV(rfc, param_grid, cv=5, random_state=42).fit(new_x_train,y_train)
+#param_grid = {"n_estimators": [100, 300, 500, 1000],
+#              "max_depth": [3, 5, 7, 10, 30, 50]}
+#HGS = HalvingGridSearchCV(rfc, param_grid, cv=5, random_state=42).fit(new_x_train,y_train)
 
-print(HGS.best_estimator_)
+#print(HGS.best_estimator_)
 
 
 #rfc.fit(new_x_train, y_train)
@@ -91,16 +92,14 @@ print(HGS.best_estimator_)
 predictions = rfc.predict(new_x_test)
 probabilities = rfc.predict_proba(new_x_test)
 trueplots = []
-negativeplots = []
+probabilitylist = []
 for index, values in enumerate(predictions):
     #for probality in enumerate(probabilities):
         geo = x_test[index][3]
         prob = probabilities[index][1]
         probabilitylist.append(prob)
         trueplots.append(geo)
-    else: 
-         geo = x_test[index][3]
-         negativeplots.append(geo)
+  
 #for i in range(len(x_test)):
     #print("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n Probability (False, True)=%s \n Prediction=%s \n+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ \n" % ((probality[i]*100), (predictions[i])))
 
@@ -112,10 +111,10 @@ print('NY accuracy score of training set: ', accuracy_score(y_train, rfc2.predic
 print('NY accuracy score of test set: ', accuracy_score(y_test, predictions2))
 
 
-dataplot = pd.DataFrame({'geometry':trueplots})
-dataplot.to_csv('Dataset/Dataset-creator/csv_files/trueplots.csv')
-dataplot = pd.DataFrame({'geometry':negativeplots})
-dataplot.to_csv('Dataset/Dataset-creator/csv_files/negativeplots.csv')
+dataplot = gpd.GeoDataFrame({'geometry':trueplots,'probability':probabilitylist},geometry='geometry',crs='EPSG:3857')
+#heatMapResults.print_heatmap_of_predictions('probability','EPSG:3857',geodataframe=dataplot)
+#dataplot.to_csv('Dataset/Dataset-creator/csv_files/trueplots.csv')
+
 
 print(probabilities[1])
 print(x_test[3])
@@ -139,10 +138,7 @@ print_confusion_matrix(y_test,predictions)
 #result = cross_val_score(rfc2 , x, y, cv = kf)
 #print(result)
 
-
-""" 
-
-feature_list = list(data.columns)
+feature_list = list(data.columns.drop(['geometry','Unnamed: 0.1','Unnamed: 0.1.1','Unnamed: 0']))
 importances = list(rfc.feature_importances_)
 feature_importances = [(feature, round(importance, 4)) for feature, importance in zip(feature_list, importances)]
 feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
@@ -154,7 +150,7 @@ for pair in feature_importances:
     print('Variable: {:20} Importance: {}'.format(*pair))
     counter+=1
 
- """
+
 
 #print("Cross val score: {}".format(result.mean()),result)
 #data1 = data.dropna()
@@ -204,15 +200,15 @@ ax.grid(which = "minor", b=True, alpha=0.6)
 
 '''
 
-gdf = csvTools.convert_csv_to_gdf('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/completedataset_DK_with_occurences_10K.csv', True, 'EPSG:3857')
-gdf.geometry = gdf['geometry']
-gdf = gdf.to_crs('EPSG:4326')
+#gdf = csvTools.convert_csv_to_gdf('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/completedataset_DK_with_occurences_10K.csv', True, 'EPSG:3857')
+#gdf.geometry = gdf['geometry']
+#gdf = gdf.to_crs('EPSG:4326')
 
 
-gdf['x'] = gdf['geometry'].centroid.x
-gdf['y'] = gdf['geometry'].centroid.y
+#gdf['x'] = gdf['geometry'].centroid.x
+#gdf['y'] = gdf['geometry'].centroid.y
 
 
-sns.kdeplot(data=gdf, x='x', y= 'y', fill= True, cmap = 'coolwarm', alpha = 0.3, gridsize = 200, levels = 20, ax = ax)
+#sns.kdeplot(data=gdf, x='x', y= 'y', fill= True, cmap = 'coolwarm', alpha = 0.3, gridsize = 200, levels = 20, ax = ax)
 
 
