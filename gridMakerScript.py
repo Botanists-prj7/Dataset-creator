@@ -19,7 +19,7 @@ for gridsize in gridsizes:
     else:
         dk_soiltype_geodataframe = convert_shp_to_gdf_using_crs('data/Jordart_200000_Shape/Jordart_200000.shp',crs)
         dk_geodataframe_grid = convert_gdf_to_gdfgrid(dk_soiltype_geodataframe,gridsize, crs) 
-
+ 
     #Adding relevant data to our geodataframe
     dk_geodataframe_grid[soiltypeColumnName] = ''
     dk_geodataframe_grid[centerColumnName] = dk_geodataframe_grid.centroid
