@@ -7,11 +7,11 @@ Created on Mon Oct 18 12:18:09 2021
 
 import geopandas as gpd
 
-maxTemp = gpd.read_file('F:/uni/p7/Dataset-creator/data/MetereologiskData/maxtempdatamonth.json')     
-minTemp = gpd.read_file('F:/uni/p7/Dataset-creator/data/MetereologiskData/mintempdatamonth.json')
-wind = gpd.read_file('F:/uni/p7/Dataset-creator/data/MetereologiskData/raindatamonth.json')
-sun = gpd.read_file('F:/uni/p7/Dataset-creator/data/MetereologiskData/sundatamonth.json')
-rain = gpd.read_file('F:/uni/p7/Dataset-creator/data/MetereologiskData/winddatamonth.json')
+maxTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/maxtempdatamonth.json')     
+minTemp = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/mintempdatamonth.json')
+wind = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/winddatamonth.json')
+sun = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/sundatamonth.json')
+rain = gpd.read_file('C:/Users/lasse/OneDrive/Dokumenter/ProjektCSIT7/Tempdata/raindatamonth.json')
 
 def columnDropper(oldData):
     return oldData[['from','stationId','value','geometry']]
@@ -105,26 +105,26 @@ def tableRemaster(oldData, rename):
 maxTempSmall = columnDropper(maxTemp)
 maxTempCoord = coordCreator(maxTempSmall)
 maxTempCalculated = tableRemaster(maxTempCoord, 'maxTemp')
-maxTempCalculated.to_csv('F:/uni/p7/Dataset-creator/csv_files/DK_ClimateMaxTemp.csv')
+maxTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateMaxTemp.csv')
 
 minTempSmall = columnDropper(minTemp)
 minTempCoord = coordCreator(minTempSmall)
 minTempCalculated = tableRemaster(minTempCoord, 'minTemp')
-minTempCalculated.to_csv('F:/uni/p7/Dataset-creator/csv_files/DK_ClimateMinTemp.csv')
+minTempCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateMinTemp.csv')
 
 windSmall = columnDropper(wind)
 windCoord = coordCreator(windSmall)
 windCalculated = tableRemaster(windCoord, 'wind')
 windCalculated.drop(['windApril','windMay','windJune'], axis=1, inplace=True)
-windCalculated.to_csv('F:/uni/p7/Dataset-creator/csv_files/DK_ClimateWind.csv')
+windCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateWind.csv')
 
 sunSmall = columnDropper(sun)
 sunCoord = coordCreator(sunSmall)
 sunCalculated = tableRemaster(sunCoord, 'sun')
-sunCalculated.to_csv('F:/uni/p7/Dataset-creator/csv_files/DK_ClimateSun.csv')
+sunCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateSun.csv')
 
 rainSmall = columnDropper(rain)
 rainCoord = coordCreator(rainSmall)
 rainCalculated = tableRemaster(rainCoord,'rain')
-rainCalculated.to_csv('F:/uni/p7/Dataset-creator/csv_files/DK_ClimateRain.csv')
+rainCalculated.to_csv('C:/Users/lasse/OneDrive/Dokumenter/GitHub/Dataset-creator/csv_files/DK_ClimateRain.csv')
 
